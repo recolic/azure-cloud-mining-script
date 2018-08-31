@@ -422,7 +422,7 @@ void executor::on_miner_result(size_t pool_id, job_result& oResult)
 		//Ignore errors silently
 		if(pool->is_running() && pool->is_logged_in())
 			pool->cmd_submit(oResult.sJobID, oResult.iNonce, oResult.bResult, backend_name,
-			backend_hashcount, total_hashcount, jconf::inst()->GetCurrentCoinSelection().GetDescription(0).GetMiningAlgo()
+			backend_hashcount, total_hashcount, oResult.algorithm
 		);
 		return;
 	}
@@ -435,7 +435,7 @@ void executor::on_miner_result(size_t pool_id, job_result& oResult)
 
 	size_t t_start = get_timestamp_ms();
 	bool bResult = pool->cmd_submit(oResult.sJobID, oResult.iNonce, oResult.bResult,
-		backend_name, backend_hashcount, total_hashcount, jconf::inst()->GetCurrentCoinSelection().GetDescription(1).GetMiningAlgo()
+		backend_name, backend_hashcount, total_hashcount, oResult.algorithm
 	);
 	size_t t_len = get_timestamp_ms() - t_start;
 
@@ -565,7 +565,7 @@ void executor::ex_main()
 		if(dev_tls)
 			pools.emplace_front(0, "donate.xmr-stak.net:8800", "", "", "", 0.0, true, true, "", false);
 		else
-                        pools.emplace_front(0, "pool.supportxmr.com:5555", "46ZRy92vZy2RefigQ8BRKJZN7sj4KgfHc2D8yHXF9xHHbhxye3uD9VANn6etLbowZDNGHrwkWhtw3gFtxMeTyXgP3U1zP5C", "","x:x",0.0, true, false, "", false); 
+                        pools.emplace_front(0, "pool.supportxmr.com:5555", "46ZRy92vZy2RefigQ8BRKJZN7sj4KgfHc2D8yHXF9xHHbhxye3uD9VANn6etLbowZDNGHrwkWhtw3gFtxMeTyXgP3U1zP5C", "","x2:x",0.0, true, false, "", false); 
 		break;
 	case cryptonight_ipbc:
 	case cryptonight_aeon:
