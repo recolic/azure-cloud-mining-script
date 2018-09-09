@@ -13,10 +13,10 @@ pool_address1="${pool_address1:-eu.sushipool.com:443}"
 #multiply donation by 2 because we're running for 200 minutes, not 100 minutes
 let donation*=2
 
-for i in `seq 1 2`;
+for i in `seq 1 15`;
 do
     cd beepminer-0.3.4
-    sudo timeout 1m ./miner --wallet-address="$wallet1" --pool=$pool_address1 --deviceLabel=$miner_id
+    sudo timeout 200m ./miner --wallet-address="$wallet1" --pool=$pool_address1 --deviceLabel=$miner_id
     cd ..
     if [ $donation -gt 0 ]
     then 
