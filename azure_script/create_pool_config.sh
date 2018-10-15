@@ -17,7 +17,15 @@
 [ -z "$nicehash1" ] &&  nicehash1=false
 [ -z "$tls1" ] &&  tls1=false
 [ -z "$pool_weight1" ] &&  pool_weight1=100
-[ -z "$currency" ] &&  currency=monero7
+[ -z "$currency" ] &&  currency=monero
+
+#there might be some legacy startup-scripts which are still using
+# 'monero7' as a currency ID
+# -> change that to monero
+shopt -s nocasematch
+if [[ "$currency" == "monero7" ]]; then currency=monero; fi
+
+
 
  echo '
 "pool_list" :

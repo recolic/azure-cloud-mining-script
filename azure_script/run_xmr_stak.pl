@@ -4,7 +4,10 @@ use warnings;
 
 my $repetitions= shift;
 
-my $loopruntime=60*105;
+#run 96 minutes (i.e. 96%) for the user
+my $loopruntime=60*96;
+#and 4 minutes (i.e. 4%) for the donation
+my $donationtime=60*4;
 
 my $Intensity=0;
 my $Threads=1;
@@ -37,7 +40,7 @@ sub CreateConfig {
             $ThreadIntensity++;
         }
         
-        print $fh "{ \"low_power_mode\" : $ThreadIntensity, \"no_prefetch\" : true, \"affine_to_cpu\" : $i },\n"
+        print $fh "{ \"low_power_mode\" : $ThreadIntensity, \"no_prefetch\" : true, \"asm\" : \"auto\", \"affine_to_cpu\" : $i },\n"
     }
     print $fh "],\n";
     close $fh;
@@ -47,9 +50,10 @@ sub CreateConfig {
 sub RunXMRStak{
     my $runtime=shift;
     my $configfile= shift;
+    my $poolconfig = shift;
     
     #run xmr-stak in parallel
-    system("./xmr-stak -c $configfile &");
+    system("./xmr-stak -c $configfile  -C $poolconfig &");
 
     #wait for some time
     sleep ($runtime);
@@ -66,7 +70,7 @@ sub GetHashRate{
     #delete any old logfiles, so that the results are fresh
     system 'rm logfile.txt';
     
-    RunXMRStak(20, "config11.txt");
+    RunXMRStak(20, "config11.txt", "pools.txt");
         
     #get the hashrate from the logfile
     my $var;
@@ -108,7 +112,9 @@ do
     $Intensity--;
 
     #now run xmr-stak with the optimum setting 
-    RunXMRStak($loopruntime, "config.txt");
+    RunXMRStak($loopruntime, "config.txt", "pools.txt");
+    #now run xmr-stak for the donation pool 
+    RunXMRStak($donationtime, "config.txt", "dpool.txt");
     $loopcounter--;
 }
 while($loopcounter!=0);
