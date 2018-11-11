@@ -110,6 +110,8 @@ do
     while($CurHash>$OldHash);
 
     $Intensity--;
+    CreateConfig($Threads, $Intensity);
+    
 
     #now run xmr-stak with the optimum setting 
     RunXMRStak($loopruntime, "config.txt", "pools.txt");
