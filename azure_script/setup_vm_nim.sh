@@ -4,7 +4,7 @@ sudo apt-get -y upgrade
 sudo apt -y install libmicrohttpd-dev libssl-dev cmake build-essential libhwloc-dev leafpad git xauth unzip
 
 #latest beta-miner
-wget https://miner.beeppool.org/downloads/beepminer-0.3.4.zip
+wget https://github.com/Beeppool/miner/releases/download/0.3.4/beepminer-0.3.4.zip
 unzip beepminer-0.3.4.zip
 mkdir donation
 cp -r beepminer-0.3.4/* donation
