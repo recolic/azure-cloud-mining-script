@@ -329,11 +329,15 @@ do
 {
 
     $Threads=`nproc`;
-    $Intensity=$Threads;
-    if($Intensity>1)
-    {
-        $Intensity-=1;
-    }
+    
+    $Intensity=1;
+#     $Intensity=$Threads;
+#     if($Intensity>1)
+#     {
+#         $Intensity-=1;
+#     }
+#     
+
 
     my $OldHash=0;
     my $CurHash=0;
@@ -345,6 +349,8 @@ do
         
         CreateUserConfig($Threads, $Intensity,15);
         $CurHash=GetHashRate();
+        
+        print "Measured hashrate: $CurHash\n";
     }
     while($CurHash>$OldHash);
 
