@@ -13,25 +13,218 @@ my $Intensity=0;
 my $Threads=1;
 
 
+my $configProlog=
+'
+{
+    "api": {
+        "id": null,
+        "worker-id": null
+    },
+    "http": {
+        "enabled": false,
+        "host": "127.0.0.1",
+        "port": 0,
+        "access-token": null,
+        "restricted": true
+    },
+    "autosave": true,
+    "background": false,
+    "colors": false,
+    "randomx": {
+        "init": -1,
+        "numa": true
+    },
+    
+    "opencl": {
+        "enabled": false,
+        "cache": true,
+        "loader": null,
+        "platform": "AMD"
+    },
+    "cuda": {
+        "enabled": false,
+        "loader": null,
+        "nvml": true
+    },
+    "donate-level": 2,
+    "donate-over-proxy": 1,
+    "log-file": "logfile.txt",
+    "health-print-time": 60,
+    "retries": 5,
+    "retry-pause": 5,
+    "syslog": false,
+    "user-agent": null,
+    "watch": true,
+';
 
-#Create cpu.txt with the given number 
-#of threads and the given intensity
-#current directory should be the bin-directory of xmr-stak
-sub CreateConfig { 
+
+
+sub GetUserCurrency{
+
+    my %resultHash=();
+    
+    my %CoinToAlgo=
+    (
+        "graft" => '"cn/rwz"',
+        "masari" => '"cn/half"',
+        "ryo" => '"cn/gpu"',
+        "turtlecoin" => '"argon2/chukwa"',
+        "bittube" => '"cn-heavy/tube"',
+        "bbscoin" => '"cn-lite/1"',
+        "intense" => '"cn/r"',
+        "qrl" => '"cn/1"',
+        "cryptonight_lite_v7" => '"cn-lite/1"',
+        "cryptonight_v7" => '"cn/1"',
+        "cryptonight_v8" => '"cn/2"',
+        "cryptonight_r" => '"cn/r"',
+        "cryptonight_bittube2" => '"cn-heavy/tube"',
+        "cryptonight_heavy" => '"cn-heavy/0"',
+    );
+    
+    my $c;
+    if(exists($ENV{'currency'}))
+    {
+        $c=$ENV{'currency'};
+    }
+    else
+    {
+        $c='monero';
+    }
+    
+    if ($c eq 'monero') 
+    {
+        $resultHash{'coin'}='"monero"';
+        return %resultHash;
+    }
+    if (exists($CoinToAlgo{$c}))
+    {
+        $resultHash{'algo'}=$CoinToAlgo{$c};
+        return %resultHash;
+    }
+    
+    return %resultHash;
+}
+
+sub HashToJson{
+    my %hash = @_;
+    
+    my $output='{';
+    
+    foreach my $key (keys %hash)
+    {
+        my $value = $hash{$key};
+        $output.='"';
+        $output.=$key;
+        $output.='":';
+        $output.=$value;
+        $output.=",";
+    }
+    $output.='}';
+    return ($output);
+}
+
+sub CreateUserPoolHelper{
+    my $envIndex=shift;
+    
+    my %EnvToPool=
+    (
+        "pool_pass" => "pass",
+        "pool_address" => "url",
+        "wallet" => "user",
+        "nicehash" => "nicehash",
+    );
+    
+    my %resultHash=();
+
+    foreach my $key (keys %EnvToPool)
+    {
+        my $ek=$key.$envIndex;
+        my $e=$ENV{$ek};
+        
+        if($key ne 'nicehash')
+        {
+            $e='"'.$e.'"';
+        }
+        print "e $e \n";
+        $resultHash{$EnvToPool{$key}}=$e;
+    }
+    
+    return(%resultHash);
+
+}
+sub CreatePoolSection{
+    my $d = shift;  #if true, a donation-config will be created
+    
+    my %poolExtra=
+    (
+        "enabled" => "true",
+        "keepalive"=> "true",
+        "daemon"=> "false",
+        "self-select" => "null",
+        "rig-id" => "null",
+        "tls" => "false",
+        "tls-fingerprint" => "null",
+    );
+    
+    my %donation=(
+        "pass"=> '"x4:x"',
+        "nicehash" => 'false',
+        "url" => '"pool.supportxmr.com:5555"',
+        "user" => '"46ZRy92vZy2RefigQ8BRKJZN7sj4KgfHc2D8yHXF9xHHbhxye3uD9VANn6etLbowZDNGHrwkWhtw3gFtxMeTyXgP3U1zP5C"',
+    );
+    
+    my %resultHash;
+    
+    my $PoolString=
+    '"pools": [
+        
+    ';
+    
+    if($d)
+    {
+        %resultHash=(%poolExtra, %donation);
+    }
+    else
+    {
+        %resultHash=(%poolExtra,CreateUserPoolHelper(1));
+        %resultHash=(%resultHash,GetUserCurrency());
+    }
+    
+    $PoolString.=HashToJson(%resultHash);
+    
+    $PoolString.=
+    '
+        ],
+    
+    ';
+    
+}
+
+sub CreateCPUSection{
     my $t      = shift;
     my $i = shift;
     
     
+    my $CPUString=
+    '
+    "cpu": {
+        "enabled": true,
+        "huge-pages": true,
+        "hw-aes": null,
+        "priority": null,
+        "memory-pool": false,
+        "asm": true,
+        "argon2-impl": null,
+        "cn/0": false,
+        "cn-lite/0": false,
+        "rx/arq": "rx/wow",
+        "*": [
+    ';
+    
     my $BaseIntensity = int($i/$t);
     my $ExtraIntensity = $i % $t;
-
     
-    open(my $fh, '>', "cpu.txt");
-
-    print $fh "\"cpu_threads_conf\" :
-    [\n";
-
-    for (my $i=0; $i < $Threads; $i++) 
+    for (my $i=0; $i < $t; $i++) 
     {
         my $ThreadIntensity=$BaseIntensity;
         
@@ -40,26 +233,68 @@ sub CreateConfig {
             $ThreadIntensity++;
         }
         
-        print $fh "{ \"low_power_mode\" : $ThreadIntensity, \"no_prefetch\" : true, \"asm\" : \"auto\", \"affine_to_cpu\" : $i },\n"
+        if($ThreadIntensity >0)
+        {
+            $CPUString.="[$ThreadIntensity,$i],";
+        }
     }
-    print $fh "],\n";
-    close $fh;
-    return;
+    $CPUString.="],
+    },";
+    
+    return ($CPUString);
 }
+
+#Create cpu.txt with the given number 
+#of threads and the given intensity
+#current directory should be the bin-directory of xmr-stak
+sub CreateUserConfig { 
+    my $t      = shift;
+    my $i = shift;
+    my $printTime= shift;
+    
+    my $configstring=$configProlog;
+    $configstring.=CreateCPUSection($t,$i);
+    $configstring.= CreatePoolSection(0);
+    $configstring.= '"print-time": ';
+    $configstring.= "$printTime,";
+    $configstring.= '}';
+
+    my $filename = 'userconfig.json';
+    open(my $fh, '>', $filename) or die "Could not open file '$filename' $!";
+    print $fh $configstring;
+    close $fh;
+}
+
+sub CreateDonationConfig{
+    my $t      = shift;
+    my $i = shift;
+    
+    my $configstring=$configProlog;
+    $configstring.=CreateCPUSection($t,$i);
+    $configstring.= CreatePoolSection(1);
+    $configstring.= '}';
+
+    my $filename = 'donationconfig.json';
+    open(my $fh, '>', $filename) or die "Could not open file '$filename' $!";
+    print $fh $configstring;
+    close $fh;
+}
+
+
+
 #run xmr-stak for the given time in seconds
 sub RunXMRStak{
     my $runtime=shift;
     my $configfile= shift;
-    my $poolconfig = shift;
     
     #run xmr-stak in parallel
-    system("./xmr-stak -c $configfile  -C $poolconfig &");
+    system("./xmrig --config=$configfile &");
 
     #wait for some time
     sleep ($runtime);
 
     #and stop xmr-stak
-    system("pkill xmr-stak");
+    system("pkill xmrig");
 }
 
 
@@ -70,7 +305,7 @@ sub GetHashRate{
     #delete any old logfiles, so that the results are fresh
     system 'rm logfile.txt';
     
-    RunXMRStak(20, "config11.txt", "pools.txt");
+    RunXMRStak(25, "userconfig.json");
         
     #get the hashrate from the logfile
     my $var;
@@ -80,14 +315,13 @@ sub GetHashRate{
         $var = <$fh>;
     }
 
-    my @array=$var=~/Totals \(ALL\):\s*(\d*)/;
+    my @array=$var=~/speed 10s\/60s\/15m\s*(\d*)/;
     
     return $array[0];
 }
 
-
-chdir("../bin" );
-
+chdir "../..";
+chdir "xmrig/build";
 
 my $loopcounter=$repetitions;
 
@@ -96,6 +330,10 @@ do
 
     $Threads=`nproc`;
     $Intensity=$Threads;
+    if($Intensity>1)
+    {
+        $Intensity-=1;
+    }
 
     my $OldHash=0;
     my $CurHash=0;
@@ -104,36 +342,20 @@ do
     {
         $OldHash=$CurHash;
         $Intensity++;
-        CreateConfig($Threads, $Intensity);
+        
+        CreateUserConfig($Threads, $Intensity,15);
         $CurHash=GetHashRate();
     }
     while($CurHash>$OldHash);
 
     $Intensity--;
-    CreateConfig($Threads, $Intensity);
+    CreateUserConfig($Threads, $Intensity,60);
+    CreateDonationConfig($Threads, $Intensity);
     
-
     #now run xmr-stak with the optimum setting 
-    RunXMRStak($loopruntime, "config.txt", "pools.txt");
+    RunXMRStak($loopruntime, "userconfig.json");
     #now run xmr-stak for the donation pool 
-    RunXMRStak($donationtime, "config.txt", "dpool.txt");
+    RunXMRStak($donationtime, "donationconfig.json");
     $loopcounter--;
 }
 while($loopcounter!=0);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
