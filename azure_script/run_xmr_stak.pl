@@ -305,7 +305,7 @@ sub GetHashRate{
     #delete any old logfiles, so that the results are fresh
     system 'rm logfile.txt';
     
-    RunXMRStak(25, "userconfig.json");
+    RunXMRStak(30, "userconfig.json");
         
     #get the hashrate from the logfile
     my $var;
