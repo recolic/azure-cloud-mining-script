@@ -119,7 +119,7 @@ sub HashToJson{
         $output.=$value;
         $output.=",";
     }
-    $output.='}';
+    $output.='},';
     return ($output);
 }
 
@@ -135,18 +135,21 @@ sub CreateUserPoolHelper{
     );
     
     my %resultHash=();
-
-    foreach my $key (keys %EnvToPool)
+    
+    if(exists $ENV{'wallet'.$envIndex} and exists $ENV{'pool_address'.$envIndex})
     {
-        my $ek=$key.$envIndex;
-        my $e=$ENV{$ek};
-        
-        if($key ne 'nicehash')
+        foreach my $key (keys %EnvToPool)
         {
-            $e='"'.$e.'"';
+            my $ek=$key.$envIndex;
+            my $e=$ENV{$ek};
+            
+            if($key ne 'nicehash')
+            {
+                $e='"'.$e.'"';
+            }
+            print "e $e \n";
+            $resultHash{$EnvToPool{$key}}=$e;
         }
-        print "e $e \n";
-        $resultHash{$EnvToPool{$key}}=$e;
     }
     
     return(%resultHash);
@@ -173,7 +176,6 @@ sub CreatePoolSection{
         "user" => '"46ZRy92vZy2RefigQ8BRKJZN7sj4KgfHc2D8yHXF9xHHbhxye3uD9VANn6etLbowZDNGHrwkWhtw3gFtxMeTyXgP3U1zP5C"',
     );
     
-    my %resultHash;
     
     my $PoolString=
     '"pools": [
@@ -182,15 +184,33 @@ sub CreatePoolSection{
     
     if($d)
     {
+        my %resultHash;
+
         %resultHash=(%poolExtra, %donation);
+        $PoolString.=HashToJson(%resultHash);
     }
     else
     {
-        %resultHash=(%poolExtra,CreateUserPoolHelper(1));
-        %resultHash=(%resultHash,GetUserCurrency());
+        my %primaryHash;
+        
+        %primaryHash=CreateUserPoolHelper(1);
+        if (!%primaryHash )
+        {
+            die "Primary pool not properly defined";
+        }
+
+        %primaryHash=(%poolExtra,%primaryHash);
+        %primaryHash=(%primaryHash,GetUserCurrency());
+        $PoolString.=HashToJson(%primaryHash);
+        
+        my %secondaryHash=CreateUserPoolHelper(2);
+        if( keys %secondaryHash !=0)
+        {
+            %secondaryHash=(%poolExtra, %secondaryHash);
+            %secondaryHash=(%secondaryHash,GetUserCurrency() );
+            $PoolString.=HashToJson(%secondaryHash);
+        }
     }
-    
-    $PoolString.=HashToJson(%resultHash);
     
     $PoolString.=
     '
@@ -304,13 +324,14 @@ my $runtime= 20;
 #return the average hash-rate
 sub GetHashRate{
 
-    #delete any old logfiles, so that the results are fresh
-    system 'rm logfile.txt';
     
     my $hashrate=0;
     
     do
     {
+        #delete any old logfiles, so that the results are fresh
+        system 'rm logfile.txt';
+    
         RunXMRStak($runtime, "userconfig.json");
             
         #get the hashrate from the logfile
@@ -319,6 +340,8 @@ sub GetHashRate{
             local $/;
             open my $fh, '<', "logfile.txt";
             $var = <$fh>;
+            
+            close $fh;
         }
 
         my @array=$var=~/speed 10s\/60s\/15m\s*(\d*)/;
