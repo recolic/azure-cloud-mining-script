@@ -298,6 +298,8 @@ sub RunXMRStak{
 }
 
 
+my $runtime= 20;
+
 #run xmr-stak for some time and 
 #return the average hash-rate
 sub GetHashRate{
@@ -305,19 +307,30 @@ sub GetHashRate{
     #delete any old logfiles, so that the results are fresh
     system 'rm logfile.txt';
     
-    RunXMRStak(30, "userconfig.json");
-        
-    #get the hashrate from the logfile
-    my $var;
-    {
-        local $/;
-        open my $fh, '<', "logfile.txt";
-        $var = <$fh>;
-    }
-
-    my @array=$var=~/speed 10s\/60s\/15m\s*(\d*)/;
+    my $hashrate=0;
     
-    return $array[0];
+    do
+    {
+        RunXMRStak($runtime, "userconfig.json");
+            
+        #get the hashrate from the logfile
+        my $var;
+        {
+            local $/;
+            open my $fh, '<', "logfile.txt";
+            $var = <$fh>;
+        }
+
+        my @array=$var=~/speed 10s\/60s\/15m\s*(\d*)/;
+        
+        $hashrate= $array[0];
+        $runtime+=5;
+    }
+    while($hashrate == 0);
+    
+    print "Measured hashrate: $hashrate\n";
+
+    return $hashrate;
 }
 
 chdir "../..";
@@ -330,31 +343,64 @@ do
 
     $Threads=`nproc`;
     
-    $Intensity=1;
-#     $Intensity=$Threads;
-#     if($Intensity>1)
-#     {
-#         $Intensity-=1;
-#     }
-#     
-
-
-    my $OldHash=0;
-    my $CurHash=0;
-
-    do
+    $Intensity=$Threads;
+    
+    my $base;
+    
+    CreateUserConfig($Threads, $Intensity,15);
+    $base=GetHashRate();
+    
+    my $plus;
+    my $diff=0;
+    
+    CreateUserConfig($Threads, $Intensity+1,15);
+    $plus=GetHashRate();
+    
+    if($plus > $base)
     {
-        $OldHash=$CurHash;
-        $Intensity++;
-        
-        CreateUserConfig($Threads, $Intensity,15);
-        $CurHash=GetHashRate();
-        
-        print "Measured hashrate: $CurHash\n";
+        $Intensity+=1;
+        $diff=1;
+        $base=$plus;
     }
-    while($CurHash>$OldHash);
+    else
+    {
+        my $minus;
+        
+        if($Intensity >1)
+        {
+            CreateUserConfig($Threads, $Intensity-1,15);
+            $minus=GetHashRate();
+            
+            if ($minus > $base)
+            {
+                $Intensity-=1;
+                $diff=-1;
+                $base=$minus;
+            }
+        }
+    }
+    
+    if($diff !=0 && $Intensity >=2)
+    {
 
-    $Intensity--;
+        my $OldHash=$base;
+        my $CurHash=$base;
+
+        do
+        {
+            $OldHash=$CurHash;
+            
+            
+            $Intensity+=$diff;
+            
+            CreateUserConfig($Threads, $Intensity,15);
+            $CurHash=GetHashRate();
+            
+        }
+        while($CurHash>$OldHash && $Intensity>=2);
+    }
+
+    $Intensity-=$diff;
     CreateUserConfig($Threads, $Intensity,60);
     CreateDonationConfig($Threads, $Intensity);
     
