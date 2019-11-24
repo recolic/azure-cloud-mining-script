@@ -350,37 +350,37 @@ do
     CreateUserConfig($Threads, $Intensity,15);
     $base=GetHashRate();
     
-    my $plus;
+    my $plus=0;
+    my $minus=0;
     my $diff=0;
-    
-    CreateUserConfig($Threads, $Intensity+1,15);
-    $plus=GetHashRate();
-    
-    if($plus > $base)
+
+    if($Intensity >=2)
     {
-        $Intensity+=1;
-        $diff=1;
-        $base=$plus;
+        CreateUserConfig($Threads, $Intensity-1,15);
+        $minus=GetHashRate();
+    }
+    
+    if($minus > $base)
+    {
+        $Intensity-=1;
+        $diff=-1;
+        $base=$minus;
     }
     else
     {
-        my $minus;
+        CreateUserConfig($Threads, $Intensity+1,15);
+        $plus=GetHashRate();
         
-        if($Intensity >1)
+        if($plus > $base)
         {
-            CreateUserConfig($Threads, $Intensity-1,15);
-            $minus=GetHashRate();
-            
-            if ($minus > $base)
-            {
-                $Intensity-=1;
-                $diff=-1;
-                $base=$minus;
-            }
+            $Intensity+=1;
+            $diff=1;
+            $base=$plus;
         }
     }
+
     
-    if($diff !=0 && $Intensity >=2)
+    if($diff !=0)
     {
 
         my $OldHash=$base;
@@ -389,18 +389,23 @@ do
         do
         {
             $OldHash=$CurHash;
-            
-            
             $Intensity+=$diff;
             
-            CreateUserConfig($Threads, $Intensity,15);
-            $CurHash=GetHashRate();
-            
+            if($Intensity<=0)
+            {
+                $CurHash=0;
+            }
+            else
+            {
+                CreateUserConfig($Threads, $Intensity,15);
+                $CurHash=GetHashRate();
+            }
+                
         }
-        while($CurHash>$OldHash && $Intensity>=2);
+        while($CurHash>$OldHash);
+        $Intensity-=$diff;
     }
-
-    $Intensity-=$diff;
+    
     CreateUserConfig($Threads, $Intensity,60);
     CreateDonationConfig($Threads, $Intensity);
     
