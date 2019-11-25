@@ -8,7 +8,7 @@ git checkout v5.0.1
 mkdir build
 cd build
 cmake ..
-make -j$(nproc)
+make 
 cd ..
 cd ..
 
