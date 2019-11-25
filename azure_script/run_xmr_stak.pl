@@ -314,7 +314,7 @@ sub RunXMRStak{
     sleep ($runtime);
 
     #and stop xmr-stak
-    system("pkill xmrig");
+    system("sudo pkill xmrig");
 }
 
 
@@ -330,7 +330,7 @@ sub GetHashRate{
     do
     {
         #delete any old logfiles, so that the results are fresh
-        system 'rm logfile.txt';
+        system 'sudo rm logfile.txt';
     
         RunXMRStak($runtime, "userconfig.json");
             
