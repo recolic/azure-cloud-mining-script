@@ -308,7 +308,7 @@ sub RunXMRStak{
     my $configfile= shift;
     
     #run xmr-stak in parallel
-    system("./xmrig --config=$configfile &");
+    system("nice -n -10 ./xmrig --config=$configfile &");
 
     #wait for some time
     sleep ($runtime);
@@ -318,7 +318,7 @@ sub RunXMRStak{
 }
 
 
-my $runtime= 20;
+my $runtime= 40;
 
 #run xmr-stak for some time and 
 #return the average hash-rate
@@ -344,7 +344,7 @@ sub GetHashRate{
             close $fh;
         }
 
-        my @array=$var=~/speed 10s\/60s\/15m\s*(\d*)/;
+        my @array=$var=~/H\/s max (\d*)/;
         
         $hashrate= $array[0];
         $runtime+=5;
@@ -369,8 +369,9 @@ do
     $Intensity=$Threads;
     
     my $base;
+    my $displayTime=30;
     
-    CreateUserConfig($Threads, $Intensity,15);
+    CreateUserConfig($Threads, $Intensity,$displayTime);
     $base=GetHashRate();
     
     my $plus=0;
@@ -379,7 +380,7 @@ do
 
     if($Intensity >=2)
     {
-        CreateUserConfig($Threads, $Intensity-1,15);
+        CreateUserConfig($Threads, $Intensity-1,$displayTime);
         $minus=GetHashRate();
     }
     
@@ -391,7 +392,7 @@ do
     }
     else
     {
-        CreateUserConfig($Threads, $Intensity+1,15);
+        CreateUserConfig($Threads, $Intensity+1,$displayTime);
         $plus=GetHashRate();
         
         if($plus > $base)
@@ -420,7 +421,7 @@ do
             }
             else
             {
-                CreateUserConfig($Threads, $Intensity,15);
+                CreateUserConfig($Threads, $Intensity,$displayTime);
                 $CurHash=GetHashRate();
             }
                 
