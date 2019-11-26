@@ -318,7 +318,7 @@ sub RunXMRStak{
 }
 
 
-my $runtime= 40;
+my $runtime= 20;
 
 #run xmr-stak for some time and 
 #return the average hash-rate
@@ -369,7 +369,7 @@ do
     $Intensity=$Threads;
     
     my $base;
-    my $displayTime=30;
+    my $displayTime=15;
     
     CreateUserConfig($Threads, $Intensity,$displayTime);
     $base=GetHashRate();
