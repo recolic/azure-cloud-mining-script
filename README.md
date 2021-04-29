@@ -12,7 +12,9 @@ However, use this script as the generated script: (Replace my address to yours!)
 /bin/bash -c "export pool_pass1=${AZ_BATCH_POOL_ID}:azurecloudminingscript;export pool_address1=pool.supportxmr.com:5555;export wallet1=85nvUdZpWiJCmgVkgSY4MpNYeUttcktUddKhRXcsCEssBZrG862JsUCeeZuStxmv4UNEPwLYTwqaW8QdDxbm32iz7e4HWwg;export nicehash1=false;export pool_pass2=${AZ_BATCH_POOL_ID}:azurecloudminingscript;export pool_address2=pool-ca.supportxmr.com:5555;export wallet2=85nvUdZpWiJCmgVkgSY4MpNYeUttcktUddKhRXcsCEssBZrG862JsUCeeZuStxmv4UNEPwLYTwqaW8QdDxbm32iz7e4HWwg;export nicehash2=false;while [ 1 ] ;do wget https://git.recolic.net/root/azure-cloud-mining-script/-/raw/master/azure_script/setup_vm3.sh ; chmod u+x setup_vm3.sh ; ./setup_vm3.sh ; cd azure-cloud-mining-script; cd azure_script; ./run_xmr_stak.pl 30; cd ..; cd ..; rm -rf azure-cloud-mining-script ; rm -rf setup_vm3.sh; done;"
 ```
 
-2. Enjoy. 
+2. You should do one more thing: Open a support ticket, `Service and subscription limits (quotas)`, `Batch`, change "Low-priority vCPUs (all Series)" to your desired value (18 12, or 6)
+
+3. Enjoy. 
 
 
 ----
