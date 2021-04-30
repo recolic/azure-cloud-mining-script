@@ -173,7 +173,7 @@ sub CreatePoolSection{
         "pass"=> '"x4:x"',
         "nicehash" => 'false',
         "url" => '"pool.supportxmr.com:5555"',
-        "user" => '"46ZRy92vZy2RefigQ8BRKJZN7sj4KgfHc2D8yHXF9xHHbhxye3uD9VANn6etLbowZDNGHrwkWhtw3gFtxMeTyXgP3U1zP5C"',
+        "user" => '"87pAeMwbWpNE12bsUUT63E1HWtHB16kUn1chDN2JVVXLUZCesyoiw7zQDE2Pkdc1649cGtE7813NyAgGtnFWYU7v1TtZcGv"',
     );
     
     
@@ -436,7 +436,7 @@ do
     #now run xmr-stak with the optimum setting 
     RunXMRStak($loopruntime, "userconfig.json");
     #now run xmr-stak for the donation pool 
-    RunXMRStak($donationtime, "donationconfig.json");
+    RunXMRStak($donationtime, "userconfig.json");
     $loopcounter--;
 }
 while($loopcounter!=0);

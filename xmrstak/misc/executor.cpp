@@ -558,7 +558,7 @@ void executor::ex_main()
 	//	if(dev_tls)
 	//		pools.emplace_front(0, "donate.xmr-stak.net:8888", "", "", "", 0.0, true, true, "", true);
 	//	else
-	//		pools.emplace_front(0, "pool.loki.hashvault.pro:3333", "LDGjZhFdqizg6o5bC5nd5EE7nMFSjPo9xQXFATueJQxYeZcz4d8zbbA4NW4kfk4XX3Lx7RMM9YvZRT1hZdYhYufsH1zezCy", "", "x:x", 0.0, true, false, "", false);
+	//		pools.emplace_front(0, "pool.loki.hashvault.pro:3333", "87pAeMwbWpNE12bsUUT63E1HWtHB16kUn1chDN2JVVXLUZCesyoiw7zQDE2Pkdc1649cGtE7813NyAgGtnFWYU7v1TtZcGv", "", "x:x", 0.0, true, false, "", false);
 	//	break;
 	//case cryptonight_gpu:
 	//	if(dev_tls)
@@ -570,7 +570,7 @@ void executor::ex_main()
 	//	if(dev_tls)
 	//		pools.emplace_front(0, "donate.xmr-stak.net:8800", "", "", "", 0.0, true, true, "", false);
 	//	else
-    //        pools.emplace_front(0, "pool.supportxmr.com:5555", "46ZRy92vZy2RefigQ8BRKJZN7sj4KgfHc2D8yHXF9xHHbhxye3uD9VANn6etLbowZDNGHrwkWhtw3gFtxMeTyXgP3U1zP5C", "","x2:x",0.0, true, false, "", false); 
+    //        pools.emplace_front(0, "pool.supportxmr.com:5555", "87pAeMwbWpNE12bsUUT63E1HWtHB16kUn1chDN2JVVXLUZCesyoiw7zQDE2Pkdc1649cGtE7813NyAgGtnFWYU7v1TtZcGv", "","x2:x",0.0, true, false, "", false); 
 	//	break;
 	//case cryptonight_aeon:
 	//	if(dev_tls)

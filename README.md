@@ -16,6 +16,10 @@ However, use this script as the generated script: (Replace my address to yours!)
 
 3. Enjoy. 
 
+## Note
+
+`87pAeMwbWpNE12bsUUT63E1HWtHB16kUn1chDN2JVVXLUZCesyoiw7zQDE2Pkdc1649cGtE7813NyAgGtnFWYU7v1TtZcGv` is a test-only address. If this address has any hashrate on supportxmr.com, 
+it means that there's still devfee. Please open an issue!
 
 ----
 
