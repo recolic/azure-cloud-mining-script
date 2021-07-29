@@ -2,6 +2,8 @@
 
 There's someone who is flooding HTTP requests to my server. If your work actually needs such heavy traffic, please contact me at root@recolic.net. I will review and consider disabling the blacklist. 
 
+You can also use the GITHUB mirror. I think github would be ok for your 100QPS traffic. 
+
 ----
 
 # recolic's fork
