@@ -1,3 +1,9 @@
+# DDOS NOTICE
+
+There's someone who is flooding HTTP requests to my server. If your work actually needs such heavy traffic, please contact me at root@recolic.net. I will review and consider disabling the blacklist. 
+
+----
+
 # recolic's fork
 
 Removed devfee. 
