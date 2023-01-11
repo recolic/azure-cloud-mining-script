@@ -1,8 +1,8 @@
 # DDOS NOTICE
 
-There's someone who is flooding HTTP requests to my server. If your work actually needs such heavy traffic, please contact me at root@recolic.net. I will review and consider disabling the blacklist. 
+There's someone flooding HTTP requests to my server. If your work actually needs my help, please contact me at codepublic@me.recolic.net. I will review and consider disabling the blacklist. 
 
-You can also use the GITHUB mirror. I think github would be ok for your 100QPS traffic. 
+You can also use the GITHUB mirror. I think github would be happy with your 100QPS traffic. 
 
 ----
 
